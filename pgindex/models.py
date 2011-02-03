@@ -36,8 +36,10 @@ class Index(models.Model):
     content_object = generic.GenericForeignKey()
 
     def save(self, **kwargs):
+        ts = self.ts
+        self.ts = None
         super(Index, self).save(**kwargs)
-        self.set_ts(self.ts)
+        self.set_ts(ts)
 
     def set_ts(self, ts):
         """
