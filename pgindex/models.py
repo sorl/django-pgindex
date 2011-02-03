@@ -16,7 +16,7 @@ class IndexPublManager(IndexManager):
     def get_query_set(self):
         qs = super(IndexPublManager, self).get_query_set()
         return qs.filter(
-            Q(expired__lte=datetime.datetime.now()) |
+            Q(expired__gte=datetime.datetime.now()) |
             Q(expired__isnull=True)
             )
 
