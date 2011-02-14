@@ -6,7 +6,7 @@ from django.db import models, connection, transaction
 from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
-from pgindex.fields import TSVectorField
+from pgindex.fields import TSVectorField, PickleDescriptor
 
 
 class IndexManager(models.Manager):
@@ -22,10 +22,8 @@ class IndexPublManager(IndexManager):
 
 class Index(models.Model):
     ts = TSVectorField()
-    url = models.CharField(max_length=500)
-    title = models.CharField(max_length=500)
-    app = models.CharField(max_length=50)
-    summary = models.TextField(blank=True)
+    _data = models.TextField()
+    data = PickleDescriptor('_data')
     expired = models.DateTimeField(db_index=True, null=True)
 
     objects = IndexManager()

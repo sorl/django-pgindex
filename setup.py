@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-pgindex',
-    version='0.2',
+    version='0.3',
     description='Search for Django and PostgreSQL',
     long_description=open('README.rst').read(),
     author='Mikko Hellsing',

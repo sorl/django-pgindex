@@ -3,6 +3,7 @@ import re
 from abc import ABCMeta, abstractmethod
 from django.db import connection, transaction
 from django.utils.html import strip_tags
+from pgindex.models import Index
 
 
 class IndexBase(object):
@@ -11,17 +12,11 @@ class IndexBase(object):
     def __init__(self, obj):
         self.obj = obj
 
-    def get_url(self):
-        return self.obj.get_absolute_url()
-
-    def get_title(self):
-        return self.obj.title
-
-    def get_app(self):
-        return self.obj._meta.app_label
-
     @abstractmethod
-    def get_summary(self):
+    def get_data(self):
+        """
+        This is where you return your entry data
+        """
         raise NotImplemented
 
     def get_expired(self):
@@ -51,13 +46,7 @@ class IndexBase(object):
             if expired is True or expired < datetime.datetime.now():
                 # no point in indexing this
                 return
-        params = {
-            'ts': self.get_tsvector(),
-            'url': self.get_url(),
-            'title': self.get_title(),
-            'app': self.get_app(),
-            'summary': self.get_summary(),
-            'expired': self.get_expired() or None,
-        }
-        index = self.obj._index.create(**params)
+        idx = Index(ts=self.get_tsvector())
+        idx.data = self.get_data()
+        self.obj._index.add(idx)
 
