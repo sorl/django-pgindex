@@ -46,6 +46,8 @@ class IndexBase(object):
             if expired is True or expired < datetime.datetime.now():
                 # no point in indexing this
                 return
+        else:
+            expired = None
         idx = Index(ts=self.get_tsvector(), expired=expired)
         idx.data = self.get_data()
         self.obj._index.add(idx)
