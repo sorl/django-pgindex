@@ -30,7 +30,7 @@ def search(q, weight=None):
         weight = weight or '{0.1, 0.2, 0.4, 1.0}' # default weight in postgres
     extra = {
         'select': {
-            'rank': ("ts_rank_cd('%s', ts, plainto_tsquery(%s), 0)" % weight)
+            'rank': ("ts_rank_cd('%s', ts, plainto_tsquery(%%s), 0)" % weight)
         },
         'select_params': (q,),
         'where': ('ts @@ plainto_tsquery(%s)',),
