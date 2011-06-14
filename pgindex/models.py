@@ -6,7 +6,9 @@ from django.db import models, connection, transaction
 from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
-from pgindex.fields import TSVectorField, PickleDescriptor
+from pgindex.fields import TSVectorField
+from cerial import PickleField
+from stringfield import StringField
 
 
 class IndexManager(models.Manager):
@@ -22,16 +24,16 @@ class IndexPublManager(IndexManager):
 
 class Index(models.Model):
     ts = TSVectorField()
-    _data = models.TextField()
-    data = PickleDescriptor('_data')
-    expired = models.DateTimeField(db_index=True, null=True)
+    data = PickleField()
+    start_publish = models.DateTimeField(db_index=True, null=True)
+    end_publish = models.DateTimeField(db_index=True, null=True)
 
     objects = IndexManager()
     publ = IndexPublManager()
 
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey()
+    obj_app_label = StringField()
+    obj_model_name = StringField()
+    obj_pk = StringField()
 
     def save(self, **kwargs):
         ts = self.ts
@@ -51,9 +53,6 @@ class Index(models.Model):
         cursor.execute(sql)
         transaction.commit_unless_managed()
 
-    def get_absolute_url(self):
-        return self.url
-
     class Meta:
-        unique_together = (('content_type', 'object_id'),)
+        unique_together = (('obj_app_label', 'obj_model_name', 'obj_pk'),)
 
