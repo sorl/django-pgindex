@@ -1,8 +1,8 @@
 #coding=utf-8
 import datetime
 import re
-from django.contrib.contenttypes import generic
 from django.db.models import signals
+from django.utils.encoding import force_unicode
 from pgindex.models import Index
 
 
@@ -11,15 +11,21 @@ non_alpha_pat = re.compile(r'[\.\^\$\*\+\?\{\[\]\}\\\\|\(\)!"#%&/=\',;:]')
 
 
 def register(model, search_cls):
-    generic.GenericRelation(Index).contribute_to_class(model, '_index')
     _registry[model] = search_cls
-    signals.post_save.connect(update_index, sender=model, weak=False)
+    signals.post_save.connect(update_index, sender=model)
+    signals.post_delete.connect(delete_index, sender=model)
+
+
+def delete_index(sender, instance, **kwargs):
+    idx = Index.objects.get_for_object(instance)
+    if idx:
+        idx.delete()
 
 
 def update_index(sender, instance, **kwargs):
     index_cls = _registry[sender]
-    index = index_cls(instance)
-    index.update()
+    idx = index_cls(instance)
+    idx.update()
 
 
 def search(q, weight=None):

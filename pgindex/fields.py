@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class TSVectorField(SouthMixin, models.Field):
+class TSVectorField(models.Field):
     def __init__(self, *args, **kwargs):
         kwargs.update({
             'null': True,
@@ -9,6 +9,13 @@ class TSVectorField(SouthMixin, models.Field):
             'serialize': False,
         })
         super(TSVectorField, self).__init__(*args, **kwargs)
+
+    def get_prep_value(self, value):
+        """
+        It is not possible to set the vector value this way, you need to
+        execute SQL using UPDATE.
+        """
+        return None
 
     def db_type(self, connection):
         return 'tsvector'

@@ -1,7 +1,9 @@
 import datetime
 import re
+from django.utils.encoding import force_unicode
 from abc import ABCMeta, abstractmethod
 from django.db import connection, transaction
+from django.utils.encoding import force_unicode
 from django.utils.html import strip_tags
 from pgindex.models import Index
 
@@ -12,27 +14,51 @@ class IndexBase(object):
     def __init__(self, obj):
         self.obj = obj
 
-    @abstractmethod
+    def get_title(self):
+        """
+        Get the object index title.
+        """
+        return self.obj.title
+
+    def get_description(self):
+        """
+        Get the object index description.
+        """
+        return ''
+
+    def get_url(self):
+        """
+        Get the object url.
+        """
+        return self.obj.get_absolute_url()
+
     def get_data(self):
         """
-        This is where you return your entry data
+        This additional data will be pickled and stored in the index model. It
+        could be anything that you want to access from the index, for example
+        the model instance it self.
         """
-        raise NotImplemented
+        return None
 
-    def get_expired(self):
+    def get_published(self):
         """
-        Sets an expiration date for the index.
+        Controls if the object is published for index.
+        """
+        return True
 
-        Alternatives
-        ------------
-        * True: expired
-        * False: not expired
-        * A datetime.datetime object: datetime to expire
+    def get_expires(self):
         """
-        return False
+        Controls published end datetime for the index.
+        ``None`` means the end of time.
+        """
+        return None
 
     @abstractmethod
     def get_vectors(self):
+        """
+        This is weher you return your search vectors. It should be an iterable
+        with instances of ``pgindex.helpers.Vector``.
+        """
         raise NotImplemented
 
     def get_tsvector(self):
@@ -40,15 +66,19 @@ class IndexBase(object):
         return u' || '.join(tsvectors)
 
     def update(self):
-        self.obj._index.all().delete()
-        expired = self.get_expired()
-        if expired:
-            if expired is True or expired < datetime.datetime.now():
-                # no point in indexing this
-                return
-        else:
-            expired = None
-        idx = Index(ts=self.get_tsvector(), expired=expired)
+        expires = self.get_expires()
+        now = datetime.datetime.now()
+        if (not self.get_published() or expires and expires < now):
+            # the object should not be indexed
+            idx = Index.objects.get_for_object(self.obj)
+            if idx:
+                idx.delete()
+            return
+        idx = Index.objects.get_for_object(self.obj, create=True)
+        idx.title = self.get_title()
+        idx.description = self.get_description()
+        idx.url = self.get_url()
         idx.data = self.get_data()
-        self.obj._index.add(idx)
+        idx.save()
+        idx.set_ts(self.get_tsvector())
 
