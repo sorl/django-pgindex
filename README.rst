@@ -17,7 +17,7 @@ First install the package from pypi using pip::
     pip install django-pgindex
 
 
-Make ``pgindex`` an app in your ``INSTALLED_APPS``::
+Then make ``pgindex`` an app in your ``INSTALLED_APPS``::
 
     INSTALLED_APPS = (
         ...
@@ -25,6 +25,7 @@ Make ``pgindex`` an app in your ``INSTALLED_APPS``::
         ...
     )
 
+Done.
 
 Usage
 -----
@@ -62,7 +63,7 @@ admin class to your model. Example::
                 Vector(self.obj.content, weight='B'),
             )
 
-To search simply use the ``pgindex.search`` method wich returns a queryset
+To search simply use the ``pgindex.helpers.search`` method which returns a queryset
 from the ``pgindex.models.Index`` model::
 
     from pgindex.helpers import search
@@ -74,34 +75,34 @@ from the ``pgindex.models.Index`` model::
 Index methods
 -------------
 
-get_title
-^^^^^^^^^
+get_title()
+^^^^^^^^^^^
 This should return the title of the indexed object.
 
-get_description
-^^^^^^^^^^^^^^^
+get_description()
+^^^^^^^^^^^^^^^^^
 This should return the description of the indexed object.
 
-get_url
-^^^^^^^
+get_url()
+^^^^^^^^^
 This should return the url of the indexed object.
 
-get_data
-^^^^^^^^
+get_data()
+^^^^^^^^^^
 You can return additional data that will be stored in the index field here, this
 value will be pickled and depickled.
 
-get_published
-^^^^^^^^^^^^^
+get_published()
+^^^^^^^^^^^^^^^
 If this returns ``False`` and index will not be created
 
-get_expires
-^^^^^^^^^^^
+get_expires()
+^^^^^^^^^^^^^
 Can return a ``datetime.datetime`` which is the time for the index expiration.
 Returning ``None`` means that it will never expire.
 
-get_vectors
-^^^^^^^^^^^
+get_vectors()
+^^^^^^^^^^^^^
 This method needs to return a list or tuple of ``pgindex.helpers.Vector``
 instances. This in turn is the base for the text search column.
 
