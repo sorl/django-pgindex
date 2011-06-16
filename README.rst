@@ -1,7 +1,7 @@
 django-pgindex
 ==============
 
-Search for Django and PostgreSQL
+Search for Django and PostgreSQL.
 
 
 Requirements
@@ -33,7 +33,7 @@ Done.
 
 Usage
 -----
-Create and Index class and register it to your model, much like regitering an
+Create and Index class and register it to your model, much like registering an
 admin class to your model. Example::
 
     # models.py
@@ -74,6 +74,8 @@ from the ``pgindex.models.Index`` model::
 
     index_queryset = search('foo')
 
+
+See tests for examples.
 
 
 pgindex.IndexBase methods
