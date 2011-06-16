@@ -63,17 +63,17 @@ admin class to your model. Example::
                 Vector(self.obj.content, weight='B'),
             )
 
-To search simply use the ``pgindex.helpers.search`` method which returns a queryset
+To search simply use the ``pgindex.search`` method which returns a queryset
 from the ``pgindex.models.Index`` model::
 
-    from pgindex.helpers import search
+    from pgindex import search
 
     index_queryset = search('foo')
 
 
 
-Index methods
--------------
+pgindex.IndexBase methods
+-------------------------
 
 get_title()
 ^^^^^^^^^^^
@@ -103,6 +103,6 @@ Returning ``None`` means that it will never expire.
 
 get_vectors()
 ^^^^^^^^^^^^^
-This method needs to return a list or tuple of ``pgindex.helpers.Vector``
+This method needs to return a list or tuple of ``pgindex.Vector``
 instances. This in turn is the base for the text search column.
 
