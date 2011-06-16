@@ -25,6 +25,10 @@ Then make ``pgindex`` an app in your ``INSTALLED_APPS``::
         ...
     )
 
+Sync your database::
+
+    python manage.py syncdb
+
 Done.
 
 Usage
