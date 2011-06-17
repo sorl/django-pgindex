@@ -28,8 +28,8 @@ class IndexPublManager(IndexManager):
         qs = super(IndexPublManager, self).get_query_set()
         now = datetime.datetime.now()
         return qs.filter(
-            Q(expires__isnull=True) |
-            Q(expires__gte=now)
+            (Q(start_publish__isnull=True) | Q(start_publish__lte=now)) &
+            (Q(stop_publish__isnull=True) | Q(stop_publish__gte=now))
             )
 
 class Index(models.Model):
@@ -38,7 +38,8 @@ class Index(models.Model):
     url = StringField()
     data = PickleField(null=True)
     ts = TSVectorField()
-    expires = models.DateTimeField(db_index=True, null=True)
+    start_publish = models.DateTimeField(db_index=True, null=True)
+    stop_publish = models.DateTimeField(db_index=True, null=True)
     # generic foreign key kind of.
     obj_app_label = StringField()
     obj_model_name = StringField()

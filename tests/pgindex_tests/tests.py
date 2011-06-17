@@ -13,7 +13,6 @@ LOREM = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo
 class SimpleTest(TestCase):
     def setUp(self):
         self.item = Item.objects.create(title='xyz', content=LOREM)
-        self.item2 = Item.objects.create(title='Lorem', content=LOREM)
 
     def test_create(self):
         idx = Index.objects.get_for_object(self.item)
@@ -21,13 +20,15 @@ class SimpleTest(TestCase):
 
     def test_search(self):
         qs = search('Lorem')
-        self.assertEqual(qs[0].data.pk, self.item2.pk)
+        item = Item.objects.create(title='Lorem', content=LOREM)
+        self.assertEqual(qs[0].data.pk, item.pk)
 
     def test_delete(self):
+        before = Index.objects.count()
         item = Item.objects.create(title='Ipsum', content=LOREM)
-        self.assertEqual(Index.objects.count(), 3)
+        self.assertEqual(before + 1, Index.objects.count())
         item.delete()
-        self.assertEqual(Index.objects.count(), 2)
+        self.assertEqual(before, Index.objects.count())
 
     def test_url(self):
         self.assertEqual(
@@ -35,32 +36,47 @@ class SimpleTest(TestCase):
             Index.objects.get_for_object(self.item).url,
             )
 
-    def test_published_creation(self):
-        before = Index.objects.count()
-        item = ItemPubl.objects.create(title='xyz', content=LOREM)
-        after = Index.objects.count()
+    def test_publish(self):
+        before = Index.objects.all().count()
+        item = ItemPubl.objects.create(title='invisible', content=LOREM)
+        after = Index.objects.all().count()
         self.assertEqual(before, after)
 
-    def test_expires_creation_past(self):
+    def test_start_publish_creation(self):
         past = datetime.datetime.now() - datetime.timedelta(days=1)
         before = Index.objects.count()
-        item = ItemExpires.objects.create(title='xyz', content=LOREM, expires=past)
-        after = Index.objects.count()
-        self.assertEqual(before, after)
-
-    def test_expires_creation_future(self):
-        future = datetime.datetime.now() + datetime.timedelta(days=1)
-        before = Index.objects.count()
-        item = ItemExpires.objects.create(title='xyz', content=LOREM, expires=future)
+        item = ItemPublStart.objects.create(title='xyz', content=LOREM)
         after = Index.objects.count()
         self.assertEqual(before + 1, after)
 
-    def test_expires(self):
+    def test_end_publish_creation_past(self):
+        past = datetime.datetime.now() - datetime.timedelta(days=1)
+        before = Index.objects.count()
+        item = ItemPublStop.objects.create(title='xyz', content=LOREM, stop_publish=past)
+        after = Index.objects.count()
+        self.assertEqual(before, after)
+
+    def test_end_publish_creation_future(self):
+        future = datetime.datetime.now() + datetime.timedelta(days=1)
+        before = Index.objects.count()
+        item = ItemPublStop.objects.create(title='xyz', content=LOREM, stop_publish=future)
+        after = Index.objects.count()
+        self.assertEqual(before + 1, after)
+
+    def test_start_publish(self):
+        future = datetime.datetime.now() + datetime.timedelta(days=1)
+        item = ItemPublStart.objects.create(title='r0x', content=LOREM, start_publish=future)
+        self.assertEqual(0, search('r0x').count())
+        item.start_publish = datetime.datetime.now() - datetime.timedelta(days=1)
+        item.save()
+        self.assertEqual(1, search('r0x').count())
+
+    def test_end_publish(self):
         t = datetime.datetime.now() + datetime.timedelta(microseconds=1)
-        item = ItemExpires.objects.create(title='woof', content=LOREM, expires=t)
+        item = ItemPublStop.objects.create(title='woof', content=LOREM, stop_publish=t)
         time.sleep(0.01)
         self.assertEqual(0, search('woof').count())
-        item.expires = datetime.datetime.now() + datetime.timedelta(days=1)
+        item.stop_publish = datetime.datetime.now() + datetime.timedelta(days=1)
         item.save()
         self.assertEqual(1, search('woof').count())
 

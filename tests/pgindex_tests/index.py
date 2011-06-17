@@ -16,10 +16,14 @@ class ItemIndex(IndexBase):
         )
 
 class ItemPublIndex(ItemIndex):
-    def get_published(self):
+    def get_publish(self):
         return False
 
-class ItemExpiresIndex(ItemIndex):
-    def get_expires(self):
-        return self.obj.expires
+class ItemPublStartIndex(ItemIndex):
+    def get_start_publish(self):
+        return self.obj.start_publish
+
+class ItemPublStopIndex(ItemIndex):
+    def get_stop_publish(self):
+        return self.obj.stop_publish
 

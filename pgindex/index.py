@@ -40,15 +40,22 @@ class IndexBase(object):
         """
         return None
 
-    def get_published(self):
+    def get_publish(self):
         """
-        Controls if the object is published for index.
+        ``False`` means not to index this object at all
         """
         return True
 
-    def get_expires(self):
+    def get_start_publish(self):
         """
-        Controls published end datetime for the index.
+        Controls published stop datetime for the index.
+        ``None`` means the beginning of time.
+        """
+        return None
+
+    def get_stop_publish(self):
+        """
+        Controls published stop datetime for the index.
         ``None`` means the end of time.
         """
         return None
@@ -66,10 +73,10 @@ class IndexBase(object):
         return u' || '.join(tsvectors)
 
     def update(self):
-        expires = self.get_expires()
+        stop_publish = self.get_stop_publish()
         now = datetime.datetime.now()
-        if (not self.get_published() or expires and expires < now):
-            # the object should not be indexed
+        if (not self.get_publish() or stop_publish and stop_publish < now):
+            # no point in indexing this object
             idx = Index.objects.get_for_object(self.obj)
             if idx:
                 idx.delete()
@@ -79,6 +86,8 @@ class IndexBase(object):
         idx.description = self.get_description()
         idx.url = self.get_url()
         idx.data = self.get_data()
+        idx.start_publish = self.get_start_publish()
+        idx.stop_publish = stop_publish
         idx.save()
         idx.set_ts(self.get_tsvector())
 

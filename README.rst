@@ -102,8 +102,13 @@ get_published()
 ^^^^^^^^^^^^^^^
 If this returns ``False`` and index will not be created
 
-get_expires()
-^^^^^^^^^^^^^
+get_start_publish()
+^^^^^^^^^^^^^^^^^^^
+Can return a ``datetime.datetime`` which is the time when the index will be used.
+Returning ``None`` means that it will always be used.
+
+get_end_publish()
+^^^^^^^^^^^^^^^^^
 Can return a ``datetime.datetime`` which is the time for the index expiration.
 Returning ``None`` means that it will never expire.
 

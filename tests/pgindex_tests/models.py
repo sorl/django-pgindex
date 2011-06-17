@@ -1,5 +1,5 @@
 from django.db import models
-from .index import ItemIndex, ItemPublIndex, ItemExpiresIndex
+from .index import ItemIndex, ItemPublIndex, ItemPublStartIndex, ItemPublStopIndex
 from pgindex import register
 
 
@@ -17,16 +17,18 @@ class ItemBase(models.Model):
 class Item(ItemBase):
     pass
 
-
 class ItemPubl(ItemBase):
     pass
 
+class ItemPublStart(ItemBase):
+    start_publish = models.DateTimeField(null=True)
 
-class ItemExpires(ItemBase):
-    expires = models.DateTimeField()
+
+class ItemPublStop(ItemBase):
+    stop_publish = models.DateTimeField(null=True)
 
 
 register(Item, ItemIndex)
 register(ItemPubl, ItemPublIndex)
-register(ItemExpires, ItemExpiresIndex)
-
+register(ItemPublStart, ItemPublStartIndex)
+register(ItemPublStop, ItemPublStopIndex)
