@@ -8,6 +8,7 @@ Requirements
 ------------
 * Django >= 1.3
 * django-stringfield >= 0.1.5
+* django-cerial >= 0.0.2
 
 
 Installation

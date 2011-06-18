@@ -10,7 +10,7 @@ class TestCommand(test):
 
 setup(
     name='django-pgindex',
-    version='0.5.0',
+    version='0.5.1',
     description='Search for Django and PostgreSQL',
     long_description=open('README.rst').read(),
     author='Mikko Hellsing',
@@ -23,6 +23,7 @@ setup(
     cmdclass={"test": TestCommand},
     install_requires=[
         'django-stringfield>=0.1.5',
+        'django-cerial>=0.0.2',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
