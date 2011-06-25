@@ -14,6 +14,10 @@ class SimpleTest(TestCase):
     def setUp(self):
         self.item = Item.objects.create(title='xyz', content=LOREM)
 
+    def test_common_words(self):
+        item = Item.objects.create(title='the a me you can')
+        self.assertEqual(1, search('the a me you can').count())
+
     def test_create(self):
         idx = Index.objects.get_for_object(self.item)
         self.assertEqual(idx.data.pk, self.item.pk)

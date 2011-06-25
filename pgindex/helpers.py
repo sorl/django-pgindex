@@ -28,7 +28,7 @@ def update_index(sender, instance, **kwargs):
     idx.update()
 
 
-def search(q, weight=None):
+def search(q, weight=None, dictionary='simple'):
     """
     Helper function to search the index
     """
@@ -39,7 +39,7 @@ def search(q, weight=None):
             'rank': ("ts_rank_cd('%s', ts, plainto_tsquery(%%s), 0)" % weight)
         },
         'select_params': (q,),
-        'where': ('ts @@ plainto_tsquery(%s)',),
+        'where': ("ts @@ plainto_tsquery('%s', %%s)" % dictionary,),
         'params': (q,),
         'order_by': ('-rank',)
     }
@@ -48,14 +48,14 @@ def search(q, weight=None):
 
 class Vector(object):
     weight = 'B'
-    lang = 'swedish'
+    dictionary = 'simple'
     clean = True
 
-    def __init__(self, value, weight=None, lang=None, clean=None):
+    def __init__(self, value, weight=None, dictionary=None, clean=None):
         if weight is not None:
             self.weight = weight
-        if lang is not None:
-            self.lang = lang
+        if dictionary is not None:
+            self.dictionary = dictionary
         if clean is not None:
             self.clean = clean
         if self.clean is True:
@@ -68,5 +68,7 @@ class Vector(object):
 
     @property
     def tsvector(self):
-        return u"setweight(to_tsvector('%s', E'%s'), '%s')" % (self.lang, self.value, self.weight)
+        return u"setweight(to_tsvector('%s', E'%s'), '%s')" % (
+            self.dictionary, self.value, self.weight
+            )
 
