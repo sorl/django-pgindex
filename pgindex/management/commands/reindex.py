@@ -1,4 +1,5 @@
 import pgindex
+import sys
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
 from optparse import make_option
@@ -32,11 +33,15 @@ class Command(BaseCommand):
         else:
             raise CommandError(_('No apps to reindex.'))
         for model, idx_cls in registry.iteritems():
-            app_label = model._meta.app_label
+            opts = model._meta
             if options['all'] or app_label in apps:
-                print _('Reindexing %s') % app_label,
+                sys.stdout.write(_('Reindexing %s.%s') % (
+                    opts.app_label, opts.object_name
+                    ))
                 for obj in model._default_manager.all():
                     idx = idx_cls(obj)
                     idx.update()
-                print '\tOK'
+                    sys.stdout.write('.')
+                    sys.stdout.flush()
+                sys.stdout.write('OK\n')
 
