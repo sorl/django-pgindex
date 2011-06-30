@@ -10,7 +10,7 @@ class TestCommand(test):
 
 setup(
     name='django-pgindex',
-    version='0.6.0',
+    version='0.7.0',
     description='Search for Django and PostgreSQL',
     long_description=open('README.rst').read(),
     author='Mikko Hellsing',

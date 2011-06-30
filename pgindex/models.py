@@ -21,6 +21,10 @@ class IndexManager(models.Manager):
             return self.get_query_set().get(**params)
         except self.model.DoesNotExist:
             if create:
+                params.update({
+                    'obj_model_verbose_name': force_unicode(opts.verbose_name),
+                    'obj_model_verbose_name_plural': force_unicode(opts.verbose_name_plural),
+                })
                 return self.create(**params)
 
 class IndexPublManager(IndexManager):
@@ -36,6 +40,7 @@ class Index(models.Model):
     title = StringField()
     description = models.TextField(blank=True)
     url = StringField()
+    image = models.ImageField(upload_to='index', blank=True)
     data = PickleField(null=True)
     ts = TSVectorField()
     start_publish = models.DateTimeField(db_index=True, null=True)
@@ -44,6 +49,9 @@ class Index(models.Model):
     obj_app_label = StringField()
     obj_model_name = StringField()
     obj_pk = StringField()
+
+    obj_model_verbose_name = StringField()
+    obj_model_verbose_name_plural = StringField()
 
     objects = IndexManager()
     publ = IndexPublManager()

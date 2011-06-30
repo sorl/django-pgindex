@@ -32,6 +32,12 @@ class IndexBase(object):
         """
         return self.obj.get_absolute_url()
 
+    def get_image(self):
+        """
+        Get an image for the object.
+        """
+        return ''
+
     def get_data(self):
         """
         This additional data will be pickled and stored in the index model. It
@@ -84,6 +90,7 @@ class IndexBase(object):
         idx = Index.objects.get_for_object(self.obj, create=True)
         idx.title = self.get_title()
         idx.description = self.get_description()
+        idx.image = self.get_image()
         idx.url = self.get_url()
         idx.data = self.get_data()
         idx.start_publish = self.get_start_publish()
