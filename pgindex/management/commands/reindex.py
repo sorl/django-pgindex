@@ -34,7 +34,7 @@ class Command(BaseCommand):
             raise CommandError(_('No apps to reindex.'))
         for model, idx_cls in registry.iteritems():
             opts = model._meta
-            if options['all'] or app_label in apps:
+            if options['all'] or opts.app_label in apps:
                 sys.stdout.write(_('Reindexing %s.%s') % (
                     opts.app_label, opts.object_name
                     ))
