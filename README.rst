@@ -6,7 +6,7 @@ Search for Django and PostgreSQL.
 
 Requirements
 ------------
-* Django >= 1.3
+* Django >= 1.1
 * django-stringfield >= 0.1.5
 * django-cerial >= 0.0.2
 
