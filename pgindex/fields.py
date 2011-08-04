@@ -17,7 +17,7 @@ class TSVectorField(models.Field):
         """
         return None
 
-    def db_type(self, connection):
+    def db_type(self, connection=None):
         return 'tsvector'
 
     def south_field_triple(self):
