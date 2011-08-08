@@ -15,6 +15,21 @@ class ItemIndex(IndexBase):
             Vector(self.obj.content, weight='B'),
         )
 
+
+class ItemIndexSv(IndexBase):
+    def get_lang(self):
+        return 'sv'
+
+    def get_data(self):
+        return self.obj
+
+    def get_vectors(self):
+        return (
+            Vector(self.obj.title, weight='A'),
+            Vector(self.obj.content_sv, weight='B'),
+        )
+
+
 class ItemPublIndex(ItemIndex):
     def get_publish(self):
         return False

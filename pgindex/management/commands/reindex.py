@@ -32,16 +32,17 @@ class Command(BaseCommand):
             Index._default_manager.filter(obj_app_label__in=apps).delete()
         else:
             raise CommandError(_('No apps to reindex.'))
-        for model, idx_cls in registry.iteritems():
+        for model, idx_classes in registry.iteritems():
             opts = model._meta
             if options['all'] or opts.app_label in apps:
                 sys.stdout.write(_('Reindexing %s.%s') % (
                     opts.app_label, opts.object_name
                     ))
                 for obj in model._default_manager.all():
-                    idx = idx_cls(obj)
-                    idx.update()
-                    sys.stdout.write('.')
-                    sys.stdout.flush()
+                    for idx_cls in idx_classes:
+                        idx = idx_cls(obj)
+                        idx.update()
+                        sys.stdout.write('.')
+                        sys.stdout.flush()
                 sys.stdout.write('OK\n')
 

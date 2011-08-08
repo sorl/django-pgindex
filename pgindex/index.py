@@ -1,7 +1,6 @@
 import datetime
 import re
 from django.utils.encoding import force_unicode
-from abc import ABCMeta, abstractmethod
 from django.db import connection, transaction
 from django.utils.encoding import force_unicode
 from django.utils.html import strip_tags
@@ -9,7 +8,6 @@ from pgindex.models import Index
 
 
 class IndexBase(object):
-    __meta__ = ABCMeta
 
     def __init__(self, obj):
         self.obj = obj
@@ -66,7 +64,12 @@ class IndexBase(object):
         """
         return None
 
-    @abstractmethod
+    def get_lang(self):
+        """
+        Get language code, if any
+        """
+        return ''
+
     def get_vectors(self):
         """
         This is weher you return your search vectors. It should be an iterable
@@ -81,13 +84,14 @@ class IndexBase(object):
     def update(self):
         stop_publish = self.get_stop_publish()
         now = datetime.datetime.now()
+        lang = self.get_lang()
         if (not self.get_publish() or stop_publish and stop_publish < now):
             # no point in indexing this object
-            idx = Index.objects.get_for_object(self.obj)
+            idx = Index.objects.get_for_object(self.obj, lang=lang)
             if idx:
                 idx.delete()
             return
-        idx = Index.objects.get_for_object(self.obj, create=True)
+        idx = Index.objects.get_for_object(self.obj, lang=lang, create=True)
         idx.title = self.get_title()
         idx.description = self.get_description()
         idx.image = self.get_image()
@@ -95,6 +99,7 @@ class IndexBase(object):
         idx.data = self.get_data()
         idx.start_publish = self.get_start_publish()
         idx.stop_publish = stop_publish
+        idx.lang = lang
         idx.save()
         idx.set_ts(self.get_tsvector())
 

@@ -8,15 +8,18 @@ from pgindex.helpers import search, register
 
 
 LOREM = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+LOREM_SV = u'Femton goa gubbar ifrån Göteborg, ingen hittade ut'
 
 
 class SimpleTest(TestCase):
     def setUp(self):
-        self.item = Item.objects.create(title='xyz', content=LOREM)
+        self.item = Item.objects.create(title='xyz', content=LOREM,
+            content_sv=LOREM_SV)
 
     def test_common_words(self):
         item = Item.objects.create(title='the a me you can')
-        self.assertEqual(1, search('the a me you can').count())
+        result = search('the a me you can').filter(lang='')
+        self.assertEqual(1, result.count())
 
     def test_create(self):
         idx = Index.objects.get_for_object(self.item)
@@ -27,10 +30,17 @@ class SimpleTest(TestCase):
         item = Item.objects.create(title='Lorem', content=LOREM)
         self.assertEqual(qs[0].data.pk, item.pk)
 
+    def test_lang(self):
+        qs = search('ut')
+        idx_sv = qs.filter(lang='sv')
+        self.assertEqual(qs.count(), 2)
+        self.assertEqual(idx_sv.count(), 1)
+
     def test_delete(self):
         before = Index.objects.count()
         item = Item.objects.create(title='Ipsum', content=LOREM)
-        self.assertEqual(before + 1, Index.objects.count())
+        # Two new indexes are created, ItemIndex and ItemIndexSv
+        self.assertEqual(before + 2, Index.objects.count())
         item.delete()
         self.assertEqual(before, Index.objects.count())
 

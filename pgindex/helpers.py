@@ -10,22 +10,25 @@ _registry = {}
 non_alpha_pat = re.compile(r'[\.\^\$\*\+\?\{\[\]\}\\\\|\(\)!"#%&/=\',;:]')
 
 
-def register(model, search_cls):
-    _registry[model] = search_cls
+def register(model, idx_cls):
+    idx_classes = _registry.setdefault(model, [])
+    if idx_cls not in idx_classes:
+        idx_classes.append(idx_cls)
     signals.post_save.connect(update_index, sender=model)
     signals.post_delete.connect(delete_index, sender=model)
 
 
 def delete_index(sender, instance, **kwargs):
-    idx = Index.objects.get_for_object(instance)
+    idx = Index.objects.filter_for_object(instance)
     if idx:
         idx.delete()
 
 
 def update_index(sender, instance, **kwargs):
-    index_cls = _registry[sender]
-    idx = index_cls(instance)
-    idx.update()
+    idx_classes = _registry[sender]
+    for idx_cls in idx_classes:
+        idx = idx_cls(instance)
+        idx.update()
 
 
 def search(q, weight=None, dictionary='simple'):

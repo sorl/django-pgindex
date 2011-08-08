@@ -10,12 +10,22 @@ from stringfield import StringField
 
 
 class IndexManager(models.Manager):
-    def get_for_object(self, obj, create=False):
+    def filter_for_object(self, obj):
         opts = obj._meta
         params = {
             'obj_app_label': force_unicode(opts.app_label),
             'obj_model_name': force_unicode(opts.object_name),
             'obj_pk': force_unicode(obj.pk),
+            }
+        return self.get_query_set().filter(**params)
+
+    def get_for_object(self, obj, lang='', create=False):
+        opts = obj._meta
+        params = {
+            'obj_app_label': force_unicode(opts.app_label),
+            'obj_model_name': force_unicode(opts.object_name),
+            'obj_pk': force_unicode(obj.pk),
+            'lang': lang,
             }
         try:
             return self.get_query_set().get(**params)
@@ -49,6 +59,7 @@ class Index(models.Model):
     obj_app_label = StringField()
     obj_model_name = StringField()
     obj_pk = StringField()
+    lang = StringField()
 
     obj_model_verbose_name = StringField()
     obj_model_verbose_name_plural = StringField()
@@ -72,7 +83,7 @@ class Index(models.Model):
         transaction.commit_unless_managed()
 
     class Meta:
-        unique_together = (('obj_app_label', 'obj_model_name', 'obj_pk'),)
+        unique_together = (('obj_app_label', 'obj_model_name', 'obj_pk', 'lang'),)
 
 
 def create_index(app, created_models, verbosity, **kwargs):

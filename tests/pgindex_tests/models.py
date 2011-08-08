@@ -1,11 +1,12 @@
 from django.db import models
-from .index import ItemIndex, ItemPublIndex, ItemPublStartIndex, ItemPublStopIndex
+from .index import ItemIndex, ItemIndexSv, ItemPublIndex, ItemPublStartIndex, ItemPublStopIndex
 from pgindex import register
 
 
 class ItemBase(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
+    content_sv = models.TextField()
 
     def get_absolute_url(self):
         return '/item/'
@@ -29,6 +30,7 @@ class ItemPublStop(ItemBase):
 
 
 register(Item, ItemIndex)
+register(Item, ItemIndexSv)
 register(ItemPubl, ItemPublIndex)
 register(ItemPublStart, ItemPublStartIndex)
 register(ItemPublStop, ItemPublStopIndex)
