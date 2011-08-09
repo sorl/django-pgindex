@@ -1,9 +1,4 @@
 import datetime
-import re
-from django.utils.encoding import force_unicode
-from django.db import connection, transaction
-from django.utils.encoding import force_unicode
-from django.utils.html import strip_tags
 from pgindex.models import Index
 
 

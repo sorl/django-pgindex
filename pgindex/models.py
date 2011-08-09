@@ -88,6 +88,7 @@ class Index(models.Model):
 
 def create_index(app, created_models, verbosity, **kwargs):
     if Index in created_models:
+        cursor = connection.cursor()
         opts = Index._meta
         sql = "CREATE INDEX pgindex_ts_idx ON %s USING gin(ts)" % opts.db_table
         cursor.execute(sql)

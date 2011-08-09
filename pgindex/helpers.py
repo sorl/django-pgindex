@@ -1,8 +1,6 @@
 #coding=utf-8
-import datetime
 import re
 from django.db.models import signals
-from django.utils.encoding import force_unicode
 from pgindex.models import Index
 
 

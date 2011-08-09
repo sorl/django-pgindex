@@ -1,4 +1,3 @@
-import datetime
 from pgindex import IndexBase, Vector
 
 

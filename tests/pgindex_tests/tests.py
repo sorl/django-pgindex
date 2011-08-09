@@ -4,7 +4,7 @@ import time
 from django.test import TestCase
 from .models import *
 from pgindex.models import Index
-from pgindex.helpers import search, register
+from pgindex.helpers import search
 
 
 LOREM = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
