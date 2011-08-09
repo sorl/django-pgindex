@@ -34,7 +34,7 @@ def search(q, weight=None, dictionary='simple'):
     Helper function to search the index
     """
     if weight is None:
-        weight = weight or '{0.1, 0.2, 0.4, 1.0}' # default weight in postgres
+        weight = '{0.1, 0.2, 0.4, 1.0}' # default weight in postgres
     extra = {
         'select': {
             'rank': ("ts_rank_cd('%s', ts, plainto_tsquery(%%s), 0)" % weight)

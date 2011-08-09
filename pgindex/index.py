@@ -3,7 +3,6 @@ from pgindex.models import Index
 
 
 class IndexBase(object):
-
     def __init__(self, obj):
         self.obj = obj
 
