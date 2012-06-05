@@ -56,11 +56,11 @@ admin class to your model. Example::
     from pgindex import IndexBase, Vector
 
     class ItemIndex(IndexBase):
+        def get_title(self):
+            return self.obj.title
+
         def get_description(self):
             return self.obj.content
-
-        def get_data(self):
-            return self.obj
 
         def get_vectors(self):
             return (
