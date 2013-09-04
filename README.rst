@@ -99,7 +99,7 @@ get_data()
 You can return additional data that will be stored in the index field here, this
 value will be pickled and depickled.
 
-get_published()
+get_publish()
 ^^^^^^^^^^^^^^^
 If this returns ``False`` and index will not be created
 
