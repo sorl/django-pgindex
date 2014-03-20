@@ -31,8 +31,7 @@ class IndexModel(models.Model):
         """
         Performs *raw* update on ts
         """
-        ts = smart_str(ts)
-        sql = "UPDATE %s SET ts = %s WHERE id = %s;" % (
+        sql = u"UPDATE %s SET ts = %s WHERE id = %s;" % (
             self._meta.db_table, ts, self.pk
             )
         cursor = connection.cursor()
